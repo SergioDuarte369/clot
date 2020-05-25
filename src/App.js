@@ -5,26 +5,51 @@ import './App.css';
 
 import HomePage from "./pages/homepage/homepage.component";
 import ShopPage from "./pages/shop/shop.component";
-import SignInAndSignOut from "./pages/sign-in-and-sign-out/sign-in-and-sign-out.component";
+import signInAndSignOut from "./pages/sign-in-and-sign-out/sign-in-and-sign-out.component";
 import Header from "./components/header/header.component";
+import {auth} from "./firebase/firebase.utils";
 
-const HatsPage = () => (
-  <div>
-    <h1>HATS PAGE</h1>
-  </div>
-)
 
-function App() {
+
+
+class App extends React.Component {
+
+  constructor(){
+    super();
+
+    this.state = {
+      currentUser: null
+    };
+  }
+
+  unSubscribeFromAuth = null;
+
+
+  componentDidMount(){
+   this.unSubscribeFromAuth =  auth.onAuthStateChanged(user => {
+      this.setState({ currentUser: user});
+
+      console.log(user);
+      
+    })
+  }
+
+  componentWillUnmount(){
+    this.unSubscribeFromAuth();
+  }
+
+  render(){
   return (
     <div>
-    <Header/>
+    <Header currentUser={this.state.currentUser} />
     <Switch>
     <Route exact path="/" component={HomePage}/>
     <Route  path="/shop" component={ShopPage}/>
-    <Route  path="/signin" component={SignInAndSignOut}/>
+    <Route  path="/signin" component={signInAndSignOut}/>
     </Switch>
     </div>
   );
+  }
 }
 
 export default App;
